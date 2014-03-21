@@ -19,18 +19,19 @@
 #
 # == Author
 #
-define serial::console::config {
-  case $::operatingsystem {
-    /^(RedHat|CentOS)$/: {
-      if $::operatingsystemmajrelease == '6' {
-        serial::console::config::upstart { $name: }
-      } else {
-        fail('Unsupported RedHat/CentOS version')
+define serial::console::config (
+  $baud = '115200',
+) {
+  include serial::params
+
+  case $serial::params::init {
+    'upstart': {
+      serial::console::config::upstart { $name:
+        baud => $baud,
       }
     }
     default: {
-      # FIXME: can we detect upstart and use it?
-      fail('Unsupported operating system')
+      fail('Unsupported init system')
     }
   }
 

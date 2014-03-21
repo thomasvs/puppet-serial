@@ -5,6 +5,8 @@
 # [* name *]
 #   The name of the serial console; e.g. ttyS1
 #
-define serial::console::config::upstart {
+define serial::console::config::upstart (
+  $baud = '115200',
+) {
   notify { "config::upstart for ${name}": }
 }

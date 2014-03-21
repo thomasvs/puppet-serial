@@ -1,4 +1,4 @@
-# = Class: serial::console::service
+# = Class: serial::console
 #
 # This class does stuff that you describe here.
 # Change Class to Define if needed.
@@ -19,16 +19,13 @@
 #
 # == Author
 #
-define serial::console::service {
-  include serial::params
+define serial::console (
+  $baud = '115200',
+) {
 
-  case $serial::params::init {
-    'upstart': {
-        serial::console::service::upstart { $name: }
-    }
-    default: {
-      fail('Unsupported init system')
-    }
+  serial::console::service { $name: }
+  serial::console::config { $name:
+      baud => $baud
   }
 
 }
