@@ -8,5 +8,8 @@
 define serial::console::config::upstart (
   $baud = '115200',
 ) {
-  notify { "config::upstart for ${name}": }
+  file { "/etc/init/${name}.conf":
+    ensure  => present,
+    content => template('serial/console/config/upstart/init.conf'),
+  }
 }
