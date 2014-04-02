@@ -7,6 +7,7 @@ class serial::params {
     /^(RedHat|CentOS)$/: {
       if $::operatingsystemmajrelease == '6' {
         $init = 'upstart'
+        $boot = 'grub'
       } else {
         fail('Unsupported RedHat/CentOS version')
       }
