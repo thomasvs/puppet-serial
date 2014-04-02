@@ -43,12 +43,12 @@ define serial::boot::config::grub (
   # putting serial first means that by default, if no key is touched during
   # grub's timeout for console checking, all output after kernel loading
   # and before login console also goes to serial
-  $args = "'console=${console} console=tty0'"
+  $args = "${console} console=tty0"
   exec { 'grub-kernel-add-console':
-    command => "${grubby} --grub --update-kernel=ALL --args=${args}",
+    command => "${grubby} --grub --update-kernel=ALL --args='${args}'",
     # FIXME: I wish I could chain two greps so I could only do this on
     #        the lines starting with kernel
-    unless  => "${grep} ${args} ${config}",
+    unless  => "${grep} -E '\b${args}\b' ${config}",
   }
 
   $notice = '# serial, terminal and splashimage added/commented by puppet'
