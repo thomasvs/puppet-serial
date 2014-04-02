@@ -13,6 +13,6 @@ define serial::console::service::upstart {
     start      => "/sbin/initctl start ${name}",
     stop       => "/sbin/initctl stop ${name}",
     status     => "/sbin/initctl status ${name} | grep ^'${name} start/running' 1>/dev/null 2>&1",
-    require    => Serial::Console::Config[$name],
+    subscribe  => Serial::Console::Config::Upstart[$name],
   }
 }
