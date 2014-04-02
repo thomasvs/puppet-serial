@@ -1,6 +1,13 @@
 # = define serial::boot::config::grub
 #
-# This define manages grub-based config for a serial boot console
+# This define manages grub-based config for a serial boot console.
+# It:
+# - adds two lines to get grub output to go to the serial console
+# - disables the splash image command because serial consoles don't
+#   support graphics
+# - makes sure that, after booting the kernel, output is logged to the serial
+#   console first, and the standard console second.  It adds this for all
+#   kernels.
 #
 # [* name *]
 #   The name of the serial console; e.g. ttyS1
@@ -44,9 +51,16 @@ define serial::boot::config::grub (
     unless  => "${grep} ${args} ${config}",
   }
 
+  $notice = '# serial, terminal and splashimage added/commented by puppet'
+
+  exec { 'grub-add-notice':
+    command => "${sed} -i '1i${notice}' ${config}",
+    unless  => "${grep} '${notice}' ${config}",
+  }
   exec { 'grub-add-serial':
-    command => "${sed} -i '1iserial --unit=${unit} --speed=${baud}' ${config}",
+    command => "${sed} -i '2iserial --unit=${unit} --speed=${baud}' ${config}",
     unless  => "${grep} 'serial --unit' ${config}",
+    require => Exec['grub-add-notice'],
   }
   $serial = "serial --unit=${unit} --speed=${baud}"
   exec { 'grub-replace-serial':
@@ -55,9 +69,10 @@ define serial::boot::config::grub (
     require => Exec['grub-add-serial'],
   }
 
-  $tm = "--timeout-${timeout}"
+  $tm = "--timeout=${timeout}"
   exec { 'grub-add-terminal':
-    command => "${sed} -i '2iterminal ${tm} console serial' ${config}",
-    unless  => "${grep} '${tm}' ${config}",
+    command => "${sed} -i '3iterminal ${tm} console serial' ${config}",
+    unless  => "${grep} -- '${tm}' ${config}",
+    require => Exec['grub-replace-serial'],
   }
 }
