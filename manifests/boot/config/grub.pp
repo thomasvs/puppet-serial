@@ -48,7 +48,7 @@ define serial::boot::config::grub (
     command => "${grubby} --grub --update-kernel=ALL --args='${args}'",
     # FIXME: I wish I could chain two greps so I could only do this on
     #        the lines starting with kernel
-    unless  => "${grep} -E '\b${args}\b' ${config}",
+    unless  => "${grep} -E '\\b${args}\\b' ${config}",
   }
 
   $notice = '# serial, terminal and splashimage added/commented by puppet'
